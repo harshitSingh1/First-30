@@ -8,6 +8,55 @@ interface LanguageContextType {
   t: (key: string) => string;
 }
 
+// Additional translations for accessibility components
+const additionalTranslations: Record<Language, Record<string, string>> = {
+  en: {
+    'accessibleMode': 'Accessible Mode',
+    'autoRead': 'Auto-read steps aloud',
+    'language': 'Language',
+    'listenToStep': 'Listen to this step',
+    'loading': 'Loading',
+    'emergencySummary': 'Emergency Summary',
+    'copySummary': 'Copy Summary',
+  },
+  de: {
+    'accessibleMode': 'Barrierefreiheit',
+    'autoRead': 'Schritte automatisch vorlesen',
+    'language': 'Sprache',
+    'listenToStep': 'Schritt anhören',
+    'loading': 'Laden',
+    'emergencySummary': 'Notfall-Zusammenfassung',
+    'copySummary': 'Zusammenfassung kopieren',
+  },
+  hi: {
+    'accessibleMode': 'सुलभता मोड',
+    'autoRead': 'चरण स्वचालित पढ़ें',
+    'language': 'भाषा',
+    'listenToStep': 'इस चरण को सुनें',
+    'loading': 'लोड हो रहा है',
+    'emergencySummary': 'आपातकालीन सारांश',
+    'copySummary': 'सारांश कॉपी करें',
+  },
+  es: {
+    'accessibleMode': 'Modo Accesible',
+    'autoRead': 'Leer pasos en voz alta',
+    'language': 'Idioma',
+    'listenToStep': 'Escuchar este paso',
+    'loading': 'Cargando',
+    'emergencySummary': 'Resumen de Emergencia',
+    'copySummary': 'Copiar Resumen',
+  },
+  fr: {
+    'accessibleMode': 'Mode Accessible',
+    'autoRead': 'Lire les étapes à voix haute',
+    'language': 'Langue',
+    'listenToStep': 'Écouter cette étape',
+    'loading': 'Chargement',
+    'emergencySummary': 'Résumé d\'Urgence',
+    'copySummary': 'Copier le Résumé',
+  },
+};
+
 const translations: Record<Language, Record<string, string>> = {
   en: {
     // Navigation
@@ -469,7 +518,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguage] = useState<Language>('en');
 
   const t = (key: string): string => {
-    return translations[language][key] || translations.en[key] || key;
+    return translations[language][key] || additionalTranslations[language]?.[key] || translations.en[key] || additionalTranslations.en?.[key] || key;
   };
 
   return (
