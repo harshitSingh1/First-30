@@ -6,7 +6,7 @@ import { LucideIcon } from 'lucide-react';
 interface PrimaryCTAButtonProps {
   children: ReactNode;
   onClick?: () => void;
-  variant?: 'primary' | 'emergency' | 'success' | 'secondary';
+  variant?: 'primary' | 'emergency' | 'success' | 'secondary' | 'outline';
   size?: 'default' | 'large' | 'xlarge';
   fullWidth?: boolean;
   icon?: LucideIcon;
@@ -17,9 +17,10 @@ interface PrimaryCTAButtonProps {
 
 const variantClasses = {
   primary: 'bg-primary hover:bg-primary/90 text-primary-foreground glow-primary hover:shadow-lg',
-  emergency: 'bg-emergency hover:bg-emergency/90 text-emergency-foreground glow-emergency hover:shadow-lg',
+  emergency: 'bg-blue-600 hover:bg-blue-600/90 text-white glow-critical hover:shadow-lg',
   success: 'bg-success hover:bg-success/90 text-success-foreground glow-success hover:shadow-lg',
   secondary: 'bg-secondary hover:bg-secondary/80 text-secondary-foreground hover:shadow-lg',
+  outline: 'border-2 border-primary/50 bg-transparent hover:bg-primary/10 text-primary hover:border-primary',
 };
 
 const sizeClasses = {

@@ -8,29 +8,30 @@ interface PriorityBadgeProps {
   showPulse?: boolean;
 }
 
+// Calm priority colors - no red!
 const priorityConfig = {
   P1: { 
     label: 'Critical', 
-    color: 'bg-emergency text-white',
-    ring: 'ring-emergency/50',
+    color: 'bg-blue-600/20 text-blue-400 border-blue-500/30',
+    ring: 'ring-blue-500/30',
     pulse: true 
   },
   P2: { 
     label: 'High', 
-    color: 'bg-orange-500 text-white',
-    ring: 'ring-orange-500/50',
+    color: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+    ring: 'ring-amber-500/30',
     pulse: false 
   },
   P3: { 
     label: 'Medium', 
-    color: 'bg-warning text-black',
-    ring: 'ring-warning/50',
+    color: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+    ring: 'ring-teal-500/30',
     pulse: false 
   },
   P4: { 
     label: 'Low', 
-    color: 'bg-success text-white',
-    ring: 'ring-success/50',
+    color: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
+    ring: 'ring-slate-500/30',
     pulse: false 
   }
 };
@@ -47,11 +48,10 @@ const PriorityBadge = ({ priority, size = 'md', showLabel = true, showPulse = tr
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full font-semibold ring-2",
+        "inline-flex items-center gap-1.5 rounded-full font-semibold border",
         config.color,
-        config.ring,
         sizeClasses[size],
-        showPulse && config.pulse && "animate-pulse"
+        showPulse && config.pulse && "pulse-calm"
       )}
     >
       <span className="font-bold">{priority}</span>
