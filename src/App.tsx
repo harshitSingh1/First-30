@@ -4,6 +4,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import CitizenMode from "./pages/CitizenMode";
+import EmergencyFlow from "./pages/EmergencyFlow";
+import CPRMode from "./pages/CPRMode";
+import EmergencySummary from "./pages/EmergencySummary";
+import DispatcherDashboard from "./pages/DispatcherDashboard";
+import MapNearbyHelp from "./pages/MapNearbyHelp";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -16,7 +23,13 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/citizen" element={<CitizenMode />} />
+          <Route path="/emergency/:category" element={<EmergencyFlow />} />
+          <Route path="/cpr" element={<CPRMode />} />
+          <Route path="/summary" element={<EmergencySummary />} />
+          <Route path="/dispatcher" element={<DispatcherDashboard />} />
+          <Route path="/map" element={<MapNearbyHelp />} />
+          <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
