@@ -1,12 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import ProgressBar from '@/components/emergency/ProgressBar';
 import StepCard from '@/components/emergency/StepCard';
 import SafetyAlertBanner from '@/components/emergency/SafetyAlertBanner';
+import StepIllustration from '@/components/emergency/StepIllustration';
+import ListenButton from '@/components/emergency/ListenButton';
+import EmergencySummaryCard from '@/components/emergency/EmergencySummaryCard';
+import AccessibilityPanel from '@/components/accessibility/AccessibilityPanel';
 import { useEmergencyFlow } from '@/hooks/useEmergencyFlow';
 import { useEmergencyTimer } from '@/hooks/useEmergencyTimer';
-import { ArrowLeft, RotateCcw, X, Phone } from 'lucide-react';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { useAccessibility } from '@/contexts/AccessibilityContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { ArrowLeft, RotateCcw, X, Phone, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -18,14 +25,26 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 const EmergencyFlow = () => {
   const { category } = useParams<{ category: string }>();
   const navigate = useNavigate();
+  const { t } = useLanguage();
+  const { autoReadEnabled, accessibleMode } = useAccessibility();
+  const { speak, stop } = useTextToSpeech();
+  
   const [showRestartDialog, setShowRestartDialog] = useState(false);
   const [showExitDialog, setShowExitDialog] = useState(false);
   const [showInitialQuestions, setShowInitialQuestions] = useState(true);
   const [initialAnswers, setInitialAnswers] = useState<Record<string, string>>({});
+  const [showSummary, setShowSummary] = useState(false);
   
   const { 
     flow, 
@@ -39,17 +58,27 @@ const EmergencyFlow = () => {
     skipCurrentStep,
     resetFlow,
     addInput,
+    collectedInputs,
     getSummaryData 
   } = useEmergencyFlow(category || '');
   
   const { formattedTime, elapsedTime } = useEmergencyTimer(true);
+
+  // Auto-read step when it changes
+  useEffect(() => {
+    if (autoReadEnabled && currentStep && !showInitialQuestions) {
+      const textToRead = `${currentStep.title}. ${currentStep.instruction}${currentStep.warning ? `. Warning: ${currentStep.warning}` : ''}`;
+      speak(textToRead);
+    }
+    return () => stop();
+  }, [currentStepIndex, autoReadEnabled, showInitialQuestions]);
 
   if (!flow || !currentStep) {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="text-heading-1 text-foreground mb-4">Emergency not found</h1>
-          <Button onClick={() => navigate('/citizen')}>Go back</Button>
+          <Button onClick={() => navigate('/citizen')}>{t('flow.back')}</Button>
         </div>
       </Layout>
     );
@@ -69,7 +98,7 @@ const EmergencyFlow = () => {
             className="text-muted-foreground mb-6"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
-            Back
+            {t('flow.back')}
           </Button>
 
           <h1 className="text-heading-2 text-primary mb-2">{flow.category}</h1>
@@ -117,10 +146,13 @@ const EmergencyFlow = () => {
     );
   }
 
+  const completedSteps = Array.from({ length: currentStepIndex }, (_, i) => 
+    flow.steps[i]?.title || `Step ${i + 1}`
+  );
+
   const handleDone = () => {
     if (isLastStep) {
-      const summaryData = getSummaryData(elapsedTime);
-      navigate('/summary', { state: { summaryData } });
+      setShowSummary(true);
     } else {
       goToNextStep();
     }
@@ -128,16 +160,14 @@ const EmergencyFlow = () => {
 
   const handleCant = () => {
     if (isLastStep) {
-      const summaryData = getSummaryData(elapsedTime);
-      navigate('/summary', { state: { summaryData } });
+      setShowSummary(true);
     } else {
       skipCurrentStep();
     }
   };
 
   const handleEndEarly = () => {
-    const summaryData = getSummaryData(elapsedTime);
-    navigate('/summary', { state: { summaryData } });
+    setShowSummary(true);
   };
 
   const handleRestart = () => {
@@ -145,6 +175,12 @@ const EmergencyFlow = () => {
     setShowRestartDialog(false);
     setShowInitialQuestions(true);
     setInitialAnswers({});
+    setShowSummary(false);
+  };
+
+  const handleFinishSummary = () => {
+    const summaryData = getSummaryData(elapsedTime);
+    navigate('/summary', { state: { summaryData } });
   };
 
   const handleActionButton = (action: 'cpr' | 'call911' | 'timer') => {
@@ -164,9 +200,41 @@ const EmergencyFlow = () => {
     });
   };
 
+  // Show summary card
+  if (showSummary) {
+    return (
+      <Layout showHeader={false}>
+        <div className="container mx-auto px-4 py-6 pb-24 max-w-2xl">
+          <h1 className="text-heading-2 text-primary mb-6">{t('summary.title')}</h1>
+          
+          <EmergencySummaryCard
+            category={flow.category}
+            collectedInputs={collectedInputs}
+            stepsCompleted={completedSteps}
+            totalSteps={totalSteps}
+            duration={elapsedTime}
+            className="mb-6"
+          />
+
+          <div className="grid gap-3">
+            <Button onClick={handleFinishSummary} className="w-full h-12">
+              View Full Summary
+            </Button>
+            <Button variant="outline" onClick={handleRestart} className="w-full h-12">
+              {t('summary.new')}
+            </Button>
+            <Button variant="ghost" onClick={() => navigate('/citizen')} className="w-full">
+              {t('flow.exit')}
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout showHeader={false}>
-      <div className="container mx-auto px-4 py-4 pb-24 max-w-2xl">
+      <div className={`container mx-auto px-4 py-4 pb-24 max-w-2xl ${accessibleMode ? 'text-lg' : ''}`}>
         {/* Top navigation */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -178,7 +246,7 @@ const EmergencyFlow = () => {
                 className="text-muted-foreground"
               >
                 <ArrowLeft className="w-4 h-4 mr-1" />
-                Back
+                {t('flow.back')}
               </Button>
             )}
             <Button 
@@ -188,10 +256,25 @@ const EmergencyFlow = () => {
               className="text-muted-foreground"
             >
               <X className="w-4 h-4 mr-1" />
-              Exit
+              {t('flow.exit')}
             </Button>
           </div>
           <div className="flex items-center gap-2">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-muted-foreground">
+                  <Settings2 className="w-4 h-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="bg-background border-border">
+                <SheetHeader>
+                  <SheetTitle>{t('a11y.mode')}</SheetTitle>
+                </SheetHeader>
+                <div className="mt-6">
+                  <AccessibilityPanel compact />
+                </div>
+              </SheetContent>
+            </Sheet>
             <Button 
               variant="ghost" 
               size="sm" 
@@ -206,7 +289,7 @@ const EmergencyFlow = () => {
               onClick={handleEndEarly}
               className="text-muted-foreground"
             >
-              End & Summary
+              {t('flow.summary')}
             </Button>
           </div>
         </div>
@@ -217,7 +300,7 @@ const EmergencyFlow = () => {
         {/* Safety banner */}
         <SafetyAlertBanner 
           variant="info" 
-          message="Stay calm. Follow one step at a time." 
+          message={t('flow.calm')} 
           dismissible 
         />
 
@@ -227,6 +310,19 @@ const EmergencyFlow = () => {
             currentStep={currentStepIndex + 1} 
             totalSteps={totalSteps} 
             elapsedTime={formattedTime} 
+          />
+        </div>
+
+        {/* Step Illustration */}
+        <StepIllustration 
+          imagePlaceholder={currentStep.imagePlaceholder} 
+          className="mb-4"
+        />
+
+        {/* Listen Button */}
+        <div className="flex justify-center mb-4">
+          <ListenButton 
+            text={`${currentStep.title}. ${currentStep.instruction}${currentStep.warning ? `. Warning: ${currentStep.warning}` : ''}`}
           />
         </div>
 
@@ -247,7 +343,7 @@ const EmergencyFlow = () => {
           isAnimating={true}
         />
 
-        {/* Call 911 floating button - now calm blue */}
+        {/* Call Emergency floating button - calm blue */}
         <div className="fixed bottom-20 right-4 md:bottom-8 md:right-8">
           <a
             href="tel:911"
@@ -262,14 +358,14 @@ const EmergencyFlow = () => {
       <AlertDialog open={showRestartDialog} onOpenChange={setShowRestartDialog}>
         <AlertDialogContent className="premium-card border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle>Restart this emergency?</AlertDialogTitle>
+            <AlertDialogTitle>{t('flow.restart')}?</AlertDialogTitle>
             <AlertDialogDescription>
               This will reset all progress and start from the beginning.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleRestart}>Restart</AlertDialogAction>
+            <AlertDialogAction onClick={handleRestart}>{t('flow.restart')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -278,14 +374,14 @@ const EmergencyFlow = () => {
       <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
         <AlertDialogContent className="premium-card border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle>Exit emergency guidance?</AlertDialogTitle>
+            <AlertDialogTitle>{t('flow.exit')}?</AlertDialogTitle>
             <AlertDialogDescription>
               Your progress will be saved in the summary. You can also continue later.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Continue Helping</AlertDialogCancel>
-            <AlertDialogAction onClick={() => navigate('/citizen')}>Exit</AlertDialogAction>
+            <AlertDialogAction onClick={() => navigate('/citizen')}>{t('flow.exit')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

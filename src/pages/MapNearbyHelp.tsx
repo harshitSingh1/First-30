@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
-import InteractiveMap from '@/components/map/InteractiveMap';
+import InteractiveMapReal from '@/components/map/InteractiveMapReal';
 import NearbyServiceCard from '@/components/map/NearbyServiceCard';
 import VoiceAssistantButton from '@/components/voice/VoiceAssistantButton';
-import { mockNearbyServices } from '@/data/emergencyFlows';
+import { useNearbyServices } from '@/hooks/useNearbyServices';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building2, Pill, Shield, Flame, MapPin } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Building2, Pill, Shield, Flame, MapPin, Loader2, AlertCircle, RefreshCw, Navigation } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const filterTabs = [
@@ -18,19 +20,83 @@ const filterTabs = [
 
 const MapNearbyHelp = () => {
   const [selectedType, setSelectedType] = useState<string>('');
+  const { t } = useLanguage();
+  const { 
+    services, 
+    userLocation, 
+    isLoading, 
+    error, 
+    permissionState,
+    requestLocation,
+    refresh,
+    useFallback,
+  } = useNearbyServices();
 
   const filteredServices = selectedType 
-    ? mockNearbyServices.filter(s => s.type === selectedType)
-    : mockNearbyServices;
+    ? services.filter(s => s.type === selectedType)
+    : services;
 
   return (
     <Layout showEmergencyBanner>
       <div className="container mx-auto px-4 py-6 pb-32">
         {/* Header */}
         <div className="mb-8 text-center">
-          <h1 className="text-heading-1 text-foreground mb-2">Nearby Help</h1>
-          <p className="text-muted-foreground text-lg">Find emergency services and medical facilities near you</p>
+          <h1 className="text-heading-1 text-foreground mb-2">{t('citizen.nearby')}</h1>
+          <p className="text-muted-foreground text-lg">{t('citizen.nearby.desc')}</p>
         </div>
+
+        {/* Location Permission State */}
+        {permissionState === 'prompt' && !userLocation && (
+          <div className="premium-card p-6 mb-6 text-center">
+            <Navigation className="w-12 h-12 mx-auto mb-4 text-primary" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">Enable Location</h3>
+            <p className="text-muted-foreground mb-4">
+              Allow location access to find emergency services near you.
+            </p>
+            <Button onClick={requestLocation} disabled={isLoading} className="gap-2">
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Getting location...
+                </>
+              ) : (
+                <>
+                  <MapPin className="w-4 h-4" />
+                  Enable Location
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+
+        {permissionState === 'denied' && (
+          <div className="premium-card p-6 mb-6 text-center border-amber-500/30 bg-amber-500/5">
+            <AlertCircle className="w-12 h-12 mx-auto mb-4 text-amber-500" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">Location Access Denied</h3>
+            <p className="text-muted-foreground mb-4">
+              Please enable location in your browser settings to see nearby services. Showing sample data instead.
+            </p>
+          </div>
+        )}
+
+        {error && permissionState !== 'denied' && (
+          <div className="premium-card p-4 mb-6 flex items-center gap-3 border-amber-500/30 bg-amber-500/5">
+            <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0" />
+            <p className="text-sm text-foreground">{error}</p>
+          </div>
+        )}
+
+        {useFallback && userLocation && (
+          <div className="flex items-center justify-between p-3 mb-4 rounded-lg bg-secondary/50">
+            <span className="text-sm text-muted-foreground">
+              Showing sample data. Real-time data may be unavailable.
+            </span>
+            <Button variant="ghost" size="sm" onClick={refresh} className="gap-1">
+              <RefreshCw className="w-3 h-3" />
+              Retry
+            </Button>
+          </div>
+        )}
 
         {/* Filter tabs */}
         <Tabs value={selectedType} onValueChange={setSelectedType} className="w-full mb-6">
@@ -56,7 +122,12 @@ const MapNearbyHelp = () => {
 
         {/* Interactive Map */}
         <div className="mb-8">
-          <InteractiveMap services={mockNearbyServices} selectedType={selectedType || undefined} />
+          <InteractiveMapReal 
+            services={services} 
+            selectedType={selectedType || undefined}
+            userLocation={userLocation}
+            isLoading={isLoading}
+          />
         </div>
 
         {/* Services list */}
@@ -65,16 +136,33 @@ const MapNearbyHelp = () => {
             <h2 className="text-lg font-semibold text-foreground">
               {selectedType ? filterTabs.find(t => t.value === selectedType)?.label : 'All Services'}
             </h2>
-            <span className="text-sm text-muted-foreground px-3 py-1 rounded-full bg-secondary/50">
-              {filteredServices.length} found
-            </span>
+            <div className="flex items-center gap-2">
+              {userLocation && (
+                <Button variant="ghost" size="sm" onClick={refresh} disabled={isLoading}>
+                  <RefreshCw className={cn('w-4 h-4', isLoading && 'animate-spin')} />
+                </Button>
+              )}
+              <span className="text-sm text-muted-foreground px-3 py-1 rounded-full bg-secondary/50">
+                {filteredServices.length} found
+              </span>
+            </div>
           </div>
           
-          <div className="grid gap-4 sm:grid-cols-2">
-            {filteredServices.map((service) => (
-              <NearbyServiceCard key={service.id} service={service} />
-            ))}
-          </div>
+          {isLoading && services.length === 0 ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {filteredServices.map((service) => (
+                <NearbyServiceCard 
+                  key={service.id} 
+                  service={service}
+                  userLocation={userLocation}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
