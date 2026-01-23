@@ -20,7 +20,7 @@ const Layout = ({
   const location = useLocation();
   
   // Determine if we're in citizen mode paths
-  const citizenPaths = ['/citizen', '/emergency', '/cpr', '/summary'];
+  const citizenPaths = ['/citizen', '/emergency', '/cpr', '/summary', '/map'];
   const isInCitizenMode = citizenPaths.some(path => location.pathname.startsWith(path));
   
   // Show emergency banner in citizen mode by default

@@ -245,6 +245,83 @@
     transform: translateY(-2px) scale(1.02);
   }
 
+  /* 3D Card hover effect */
+  .card-3d {
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    transform-style: preserve-3d;
+  }
+
+  .card-3d:hover {
+    transform: perspective(1000px) translateZ(10px);
+  }
+
+  /* Soft glow hover */
+  .glow-hover {
+    @apply transition-shadow duration-300;
+  }
+
+  .glow-hover:hover {
+    box-shadow: 0 0 30px hsl(187 85% 43% / 0.3),
+                0 0 60px hsl(187 85% 43% / 0.15);
+  }
+
+  /* Emergency card glow hover */
+  .glow-hover-emergency:hover {
+    box-shadow: 0 0 30px hsl(0 84% 60% / 0.3),
+                0 0 60px hsl(0 84% 60% / 0.15);
+  }
+
+  /* Button press effect */
+  .button-press {
+    @apply transition-all duration-100;
+  }
+
+  .button-press:active {
+    transform: scale(0.97);
+  }
+
+  /* Floating animation */
+  .float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Shimmer effect */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(187 85% 43% / 0.1),
+      transparent
+    );
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    100% {
+      left: 100%;
+    }
+  }
+
   /* Priority indicators */
   .priority-p1 {
     @apply bg-red-500/20 text-red-400 border-red-500/30;

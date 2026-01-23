@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useState, useRef } from 'react';
 import { 
   Droplets, 
   Wind, 
@@ -8,6 +9,7 @@ import {
   Zap,
   LucideIcon 
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface EmergencyCardProps {
   id: string;
@@ -27,18 +29,31 @@ const iconMap: Record<string, LucideIcon> = {
   zap: Zap,
 };
 
-const priorityColorMap: Record<string, string> = {
-  P1: 'border-l-red-500 hover:shadow-red-500/20',
-  P2: 'border-l-orange-500 hover:shadow-orange-500/20',
-  P3: 'border-l-yellow-500 hover:shadow-yellow-500/20',
-  P4: 'border-l-green-500 hover:shadow-green-500/20',
-};
-
-const iconColorMap: Record<string, string> = {
-  P1: 'text-red-400 bg-red-500/20',
-  P2: 'text-orange-400 bg-orange-500/20',
-  P3: 'text-yellow-400 bg-yellow-500/20',
-  P4: 'text-green-400 bg-green-500/20',
+const priorityColors = {
+  P1: { 
+    border: 'border-l-red-500', 
+    glow: 'hsl(0 84% 60%)',
+    iconBg: 'bg-red-500/20',
+    iconText: 'text-red-400'
+  },
+  P2: { 
+    border: 'border-l-orange-500', 
+    glow: 'hsl(38 92% 50%)',
+    iconBg: 'bg-orange-500/20',
+    iconText: 'text-orange-400'
+  },
+  P3: { 
+    border: 'border-l-yellow-500', 
+    glow: 'hsl(48 96% 53%)',
+    iconBg: 'bg-yellow-500/20',
+    iconText: 'text-yellow-400'
+  },
+  P4: { 
+    border: 'border-l-green-500', 
+    glow: 'hsl(142 71% 45%)',
+    iconBg: 'bg-green-500/20',
+    iconText: 'text-green-400'
+  },
 };
 
 const EmergencyCard = ({
@@ -50,32 +65,71 @@ const EmergencyCard = ({
   size = 'default',
 }: EmergencyCardProps) => {
   const IconComponent = iconMap[icon] || AlertCircle;
-  const priorityColor = priorityColorMap[priorityHint];
-  const iconColor = iconColorMap[priorityHint];
+  const colors = priorityColors[priorityHint];
+  const cardRef = useRef<HTMLAnchorElement>(null);
+  const [transform, setTransform] = useState('');
+  const [glowStyle, setGlowStyle] = useState({});
 
   const sizeClasses = size === 'large' 
     ? 'min-h-[160px] p-6' 
     : 'min-h-[120px] p-5';
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!cardRef.current) return;
+    
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const rotateX = ((y - centerY) / centerY) * -4;
+    const rotateY = ((x - centerX) / centerX) * 4;
+    
+    setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`);
+    
+    const glowX = (x / rect.width) * 100;
+    const glowY = (y / rect.height) * 100;
+    
+    setGlowStyle({
+      background: `radial-gradient(circle at ${glowX}% ${glowY}%, ${colors.glow} / 0.2, transparent 50%)`,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setTransform('');
+    setGlowStyle({});
+  };
+
   return (
     <Link
+      ref={cardRef}
       to={`/emergency/${id}`}
-      className={`
-        glass-card border-l-4 ${priorityColor}
-        ${sizeClasses}
-        flex flex-col justify-between
-        hover-lift cursor-pointer
-        hover:shadow-lg transition-all duration-300
-        group
-      `}
+      className={cn(
+        'glass-card border-l-4 relative overflow-hidden',
+        colors.border,
+        sizeClasses,
+        'flex flex-col justify-between',
+        'cursor-pointer group',
+        'transition-all duration-300 ease-out'
+      )}
+      style={{ transform }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
-      <div className="flex items-start gap-4">
-        <div className={`
-          w-12 h-12 rounded-xl ${iconColor}
-          flex items-center justify-center flex-shrink-0
-          group-hover:scale-110 transition-transform duration-300
-        `}>
-          <IconComponent className="w-6 h-6" />
+      {/* Glow overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+        style={glowStyle}
+      />
+
+      <div className="relative z-10 flex items-start gap-4">
+        <div className={cn(
+          'w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0',
+          'group-hover:scale-110 transition-transform duration-300',
+          colors.iconBg
+        )}>
+          <IconComponent className={cn('w-6 h-6', colors.iconText)} />
         </div>
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
