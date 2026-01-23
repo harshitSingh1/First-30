@@ -27,14 +27,14 @@ const MapNearbyHelp = () => {
     <Layout showEmergencyBanner>
       <div className="container mx-auto px-4 py-6 pb-32">
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-8 text-center">
           <h1 className="text-heading-1 text-foreground mb-2">Nearby Help</h1>
-          <p className="text-muted-foreground">Find emergency services and medical facilities near you</p>
+          <p className="text-muted-foreground text-lg">Find emergency services and medical facilities near you</p>
         </div>
 
         {/* Filter tabs */}
         <Tabs value={selectedType} onValueChange={setSelectedType} className="w-full mb-6">
-          <TabsList className="grid w-full grid-cols-5 h-auto p-1 bg-secondary/50">
+          <TabsList className="grid w-full grid-cols-5 h-auto p-1.5 bg-secondary/50 rounded-xl">
             {filterTabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -42,12 +42,12 @@ const MapNearbyHelp = () => {
                   key={tab.value} 
                   value={tab.value}
                   className={cn(
-                    'flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2.5 px-3',
+                    'flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-3 px-3 rounded-lg',
                     'data-[state=active]:bg-primary data-[state=active]:text-primary-foreground'
                   )}
                 >
                   <Icon className="w-4 h-4" />
-                  <span className="text-xs sm:text-sm">{tab.label}</span>
+                  <span className="text-xs sm:text-sm font-medium">{tab.label}</span>
                 </TabsTrigger>
               );
             })}
@@ -55,7 +55,7 @@ const MapNearbyHelp = () => {
         </Tabs>
 
         {/* Interactive Map */}
-        <div className="mb-6">
+        <div className="mb-8">
           <InteractiveMap services={mockNearbyServices} selectedType={selectedType || undefined} />
         </div>
 
@@ -65,7 +65,7 @@ const MapNearbyHelp = () => {
             <h2 className="text-lg font-semibold text-foreground">
               {selectedType ? filterTabs.find(t => t.value === selectedType)?.label : 'All Services'}
             </h2>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm text-muted-foreground px-3 py-1 rounded-full bg-secondary/50">
               {filteredServices.length} found
             </span>
           </div>

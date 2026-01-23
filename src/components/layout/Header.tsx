@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Activity } from 'lucide-react';
+import { Menu, Activity, Home, AlertCircle, Map, Mic, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 const navItems = [
-  { label: 'Home', path: '/' },
-  { label: 'Emergency Help', path: '/citizen' },
-  { label: 'Dispatcher', path: '/dispatcher' },
-  { label: 'Nearby Help', path: '/map' },
-  { label: 'About', path: '/about' },
+  { label: 'Home', path: '/', icon: Home },
+  { label: 'Emergency Help', path: '/citizen', icon: AlertCircle },
+  { label: 'Nearby Help', path: '/map', icon: Map },
+  { label: 'Voice Guide', path: '/dispatcher', icon: Mic },
+  { label: 'About', path: '/about', icon: Info },
 ];
 
 const Header = () => {
@@ -22,14 +22,14 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full glass-card-strong border-b border-border/50">
+    <header className="sticky top-0 z-50 w-full glass-card-strong border-b border-border/30">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center group-hover:glow-primary transition-all duration-300">
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center group-hover:bg-primary/25 transition-all duration-300">
             <Activity className="w-6 h-6 text-primary" />
           </div>
-          <span className="text-xl font-bold text-foreground text-glow-primary">
+          <span className="text-xl font-bold text-foreground">
             First30<span className="text-primary">.ai</span>
           </span>
         </Link>
@@ -40,12 +40,13 @@ const Header = () => {
             <Link
               key={item.path}
               to={item.path}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
                 isActive(item.path)
-                  ? 'bg-primary/20 text-primary'
+                  ? 'bg-primary/15 text-primary'
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
               }`}
             >
+              <item.icon className="w-4 h-4" />
               {item.label}
             </Link>
           ))}
@@ -58,19 +59,20 @@ const Header = () => {
               <Menu className="w-6 h-6" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-72 glass-card-strong border-l border-border/50">
-            <div className="flex flex-col gap-4 mt-8">
+          <SheetContent side="right" className="w-72 glass-card-strong border-l border-border/30">
+            <div className="flex flex-col gap-2 mt-8">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
                   onClick={() => setIsOpen(false)}
-                  className={`px-4 py-3 rounded-xl text-lg font-medium transition-all duration-200 ${
+                  className={`px-4 py-3 rounded-xl text-lg font-medium transition-all duration-200 flex items-center gap-3 ${
                     isActive(item.path)
-                      ? 'bg-primary/20 text-primary'
+                      ? 'bg-primary/15 text-primary'
                       : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
                   }`}
                 >
+                  <item.icon className="w-5 h-5" />
                   {item.label}
                 </Link>
               ))}

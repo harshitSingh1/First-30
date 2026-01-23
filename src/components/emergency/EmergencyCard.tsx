@@ -29,30 +29,31 @@ const iconMap: Record<string, LucideIcon> = {
   zap: Zap,
 };
 
+// Calm priority colors - no red!
 const priorityColors = {
   P1: { 
-    border: 'border-l-red-500', 
-    glow: 'hsl(0 84% 60%)',
-    iconBg: 'bg-red-500/20',
-    iconText: 'text-red-400'
+    border: 'border-l-blue-500', 
+    glow: 'hsl(220 80% 50%)',
+    iconBg: 'bg-blue-500/15',
+    iconText: 'text-blue-400'
   },
   P2: { 
-    border: 'border-l-orange-500', 
-    glow: 'hsl(38 92% 50%)',
-    iconBg: 'bg-orange-500/20',
-    iconText: 'text-orange-400'
+    border: 'border-l-amber-500', 
+    glow: 'hsl(38 85% 55%)',
+    iconBg: 'bg-amber-500/15',
+    iconText: 'text-amber-400'
   },
   P3: { 
-    border: 'border-l-yellow-500', 
-    glow: 'hsl(48 96% 53%)',
-    iconBg: 'bg-yellow-500/20',
-    iconText: 'text-yellow-400'
+    border: 'border-l-teal-500', 
+    glow: 'hsl(175 70% 42%)',
+    iconBg: 'bg-teal-500/15',
+    iconText: 'text-teal-400'
   },
   P4: { 
-    border: 'border-l-green-500', 
-    glow: 'hsl(142 71% 45%)',
-    iconBg: 'bg-green-500/20',
-    iconText: 'text-green-400'
+    border: 'border-l-slate-500', 
+    glow: 'hsl(210 18% 40%)',
+    iconBg: 'bg-slate-500/15',
+    iconText: 'text-slate-400'
   },
 };
 
@@ -92,7 +93,7 @@ const EmergencyCard = ({
     const glowY = (y / rect.height) * 100;
     
     setGlowStyle({
-      background: `radial-gradient(circle at ${glowX}% ${glowY}%, ${colors.glow} / 0.2, transparent 50%)`,
+      background: `radial-gradient(circle at ${glowX}% ${glowY}%, ${colors.glow} / 0.15, transparent 50%)`,
     });
   };
 
@@ -106,7 +107,7 @@ const EmergencyCard = ({
       ref={cardRef}
       to={`/emergency/${id}`}
       className={cn(
-        'glass-card border-l-4 relative overflow-hidden',
+        'premium-card border-l-4 relative overflow-hidden',
         colors.border,
         sizeClasses,
         'flex flex-col justify-between',

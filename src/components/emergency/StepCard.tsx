@@ -54,7 +54,7 @@ const StepCard = ({
   };
 
   return (
-    <div className={`glass-card-strong p-6 md:p-8 ${isAnimating ? 'step-enter' : ''}`}>
+    <div className={`premium-card p-6 md:p-8 ${isAnimating ? 'step-enter' : ''}`}>
       {/* Step indicator */}
       <div className="flex items-center justify-between mb-6">
         <span className="text-sm font-medium text-primary">
@@ -72,11 +72,11 @@ const StepCard = ({
         </p>
       </div>
 
-      {/* Warning if present */}
+      {/* Warning if present - using amber instead of red */}
       {warning && (
-        <div className="mb-6 p-4 rounded-xl bg-warning/10 border border-warning/30 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-warning">{warning}</p>
+        <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-amber-300">{warning}</p>
         </div>
       )}
 
@@ -87,7 +87,7 @@ const StepCard = ({
             onClick={() => onActionButton?.(actionButton.action)}
             className={`w-full h-14 rounded-xl text-lg font-semibold flex items-center justify-center gap-3 ${
               actionButton.action === 'call911' 
-                ? 'bg-emergency hover:bg-emergency/90 text-white' 
+                ? 'bg-blue-600 hover:bg-blue-600/90 text-white' 
                 : actionButton.action === 'cpr'
                 ? 'bg-primary hover:bg-primary/90 text-primary-foreground glow-primary'
                 : 'bg-secondary hover:bg-secondary/80'

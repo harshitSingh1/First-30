@@ -14,10 +14,15 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Manrope', 'system-ui', 'sans-serif'],
+        display: ['Manrope', 'system-ui', 'sans-serif'],
       },
       colors: {
+        // Calm priority colors - no red!
+        'priority-critical': 'hsl(220 80% 50%)',
+        'priority-high': 'hsl(38 85% 55%)',
+        'priority-medium': 'hsl(175 70% 42%)',
+        'priority-low': 'hsl(210 18% 40%)',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

@@ -8,7 +8,6 @@ import { useEmergencyFlow } from '@/hooks/useEmergencyFlow';
 import { useEmergencyTimer } from '@/hooks/useEmergencyTimer';
 import { ArrowLeft, RotateCcw, X, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { QuickQuestion } from '@/types/emergency';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -78,7 +77,7 @@ const EmergencyFlow = () => {
 
           <div className="space-y-4">
             {flow.initialQuestions.map((q) => (
-              <div key={q.id} className="glass-card-strong p-5">
+              <div key={q.id} className="premium-card p-5">
                 <p className="font-medium text-foreground mb-3">{q.question}</p>
                 <div className="flex flex-wrap gap-2">
                   {q.options.map((option) => (
@@ -154,7 +153,6 @@ const EmergencyFlow = () => {
     } else if (action === 'call911') {
       window.location.href = 'tel:911';
     }
-    // Timer could be handled in a modal
   };
 
   const handleQuickAnswer = (questionId: string, question: string, answer: string) => {
@@ -249,11 +247,11 @@ const EmergencyFlow = () => {
           isAnimating={true}
         />
 
-        {/* Call 911 floating button */}
+        {/* Call 911 floating button - now calm blue */}
         <div className="fixed bottom-20 right-4 md:bottom-8 md:right-8">
           <a
             href="tel:911"
-            className="flex items-center justify-center w-14 h-14 rounded-full bg-emergency text-white shadow-lg pulse-emergency"
+            className="flex items-center justify-center w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg pulse-calm"
           >
             <Phone className="w-6 h-6" />
           </a>
@@ -262,7 +260,7 @@ const EmergencyFlow = () => {
 
       {/* Restart Dialog */}
       <AlertDialog open={showRestartDialog} onOpenChange={setShowRestartDialog}>
-        <AlertDialogContent className="glass-card-strong border-border">
+        <AlertDialogContent className="premium-card border-border">
           <AlertDialogHeader>
             <AlertDialogTitle>Restart this emergency?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -278,7 +276,7 @@ const EmergencyFlow = () => {
 
       {/* Exit Dialog */}
       <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
-        <AlertDialogContent className="glass-card-strong border-border">
+        <AlertDialogContent className="premium-card border-border">
           <AlertDialogHeader>
             <AlertDialogTitle>Exit emergency guidance?</AlertDialogTitle>
             <AlertDialogDescription>
