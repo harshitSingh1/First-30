@@ -1,5 +1,14 @@
 export type Priority = 'P1' | 'P2' | 'P3' | 'P4';
 
+export type AgeGroup = 'infant' | 'child' | 'adult' | 'elderly';
+
+export interface QuickQuestion {
+  id: string;
+  question: string;
+  options: { label: string; value: string }[];
+  required?: boolean;
+}
+
 export interface EmergencyStep {
   id: string;
   title: string;
@@ -7,6 +16,11 @@ export interface EmergencyStep {
   warning?: string;
   imagePlaceholder?: string;
   alternatives?: string[];
+  quickQuestion?: QuickQuestion;
+  actionButton?: {
+    label: string;
+    action: 'cpr' | 'call911' | 'timer';
+  };
 }
 
 export interface SummaryTemplate {
@@ -23,6 +37,7 @@ export interface EmergencyFlow {
   steps: EmergencyStep[];
   nextQuestions: string[];
   summaryTemplate: SummaryTemplate;
+  initialQuestions?: QuickQuestion[];
 }
 
 export interface DispatcherCase {
@@ -38,15 +53,27 @@ export interface DispatcherCase {
   stepsCompleted: string[];
 }
 
+export interface CollectedInput {
+  questionId: string;
+  question: string;
+  answer: string;
+  stepId?: string;
+}
+
 export interface EmergencySummaryData {
   category: string;
   categoryIcon: string;
   priority: Priority;
+  calculatedPriority: Priority;
   stepsCompleted: string[];
+  stepsSkipped: string[];
   totalSteps: number;
-  duration: number; // in seconds
+  duration: number;
   startTime: Date;
   endTime: Date;
+  collectedInputs: CollectedInput[];
+  keyObservations: string[];
+  actionsTaken: string[];
   location?: string;
   notes?: string;
 }
