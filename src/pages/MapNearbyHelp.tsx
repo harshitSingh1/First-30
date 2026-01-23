@@ -158,7 +158,6 @@ const MapNearbyHelp = () => {
                 <NearbyServiceCard 
                   key={service.id} 
                   service={service}
-                  userLocation={userLocation}
                 />
               ))}
             </div>
