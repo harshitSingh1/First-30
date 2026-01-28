@@ -8,7 +8,7 @@ const navItems = [
   { label: 'Home', path: '/', icon: Home },
   { label: 'Emergency Help', path: '/citizen', icon: AlertCircle },
   { label: 'Nearby Help', path: '/map', icon: Map },
-  { label: 'Voice Guide', path: '/dispatcher', icon: Mic },
+  { label: 'Voice Guide', path: '/voice', icon: Mic },
   { label: 'About', path: '/about', icon: Info },
 ];
 
