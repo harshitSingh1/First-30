@@ -13,6 +13,7 @@ import EmergencySummary from "./pages/EmergencySummary";
 import DispatcherDashboard from "./pages/DispatcherDashboard";
 import MapNearbyHelp from "./pages/MapNearbyHelp";
 import VoiceAssistant from "./pages/VoiceAssistant";
+import FirstAidKit from "./pages/FirstAidKit";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +36,7 @@ const App = () => (
               <Route path="/dispatcher" element={<DispatcherDashboard />} />
               <Route path="/map" element={<MapNearbyHelp />} />
               <Route path="/voice" element={<VoiceAssistant />} />
+              <Route path="/first-aid-kit" element={<FirstAidKit />} />
               <Route path="/about" element={<About />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
