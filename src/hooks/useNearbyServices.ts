@@ -7,6 +7,7 @@ import {
   LocationError 
 } from '@/services/locationService';
 import { mockNearbyServices } from '@/data/emergencyFlows';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface UseNearbyServicesReturn {
   services: NearbyService[];
@@ -26,6 +27,7 @@ export const useNearbyServices = (): UseNearbyServicesReturn => {
   const [error, setError] = useState<string | null>(null);
   const [permissionState, setPermissionState] = useState<'prompt' | 'granted' | 'denied' | 'unknown'>('unknown');
   const [useFallback, setUseFallback] = useState(false);
+  const { language } = useLanguage();
 
   // Check permission state on mount
   useEffect(() => {
@@ -48,7 +50,8 @@ export const useNearbyServices = (): UseNearbyServicesReturn => {
 
   const fetchServices = useCallback(async (location: UserLocation) => {
     try {
-      const nearbyServices = await fetchNearbyServices(location);
+      // Pass language preference to get localized names
+      const nearbyServices = await fetchNearbyServices(location, language);
       if (nearbyServices.length > 0) {
         setServices(nearbyServices);
         setUseFallback(false);
@@ -63,7 +66,7 @@ export const useNearbyServices = (): UseNearbyServicesReturn => {
       setServices(mockNearbyServices);
       setUseFallback(true);
     }
-  }, []);
+  }, [language]);
 
   const requestLocation = useCallback(async () => {
     setIsLoading(true);
