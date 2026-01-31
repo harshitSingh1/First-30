@@ -104,8 +104,39 @@ const mapAmenityType = (amenity: string): NearbyService['type'] | null => {
   return typeMap[amenity] || null;
 };
 
+// Get the best available name based on language preference
+const getLocalizedName = (tags: any, preferredLang: string = 'en'): string | null => {
+  // Language code mapping for Overpass tags
+  const langCodeMap: Record<string, string> = {
+    'en': 'en',
+    'de': 'de', 
+    'hi': 'hi',
+    'es': 'es',
+    'fr': 'fr',
+  };
+  
+  const langCode = langCodeMap[preferredLang] || 'en';
+  
+  // Try preferred language first, then English, then default name
+  return tags?.[`name:${langCode}`] || tags?.['name:en'] || tags?.name || null;
+};
+
+// Get type label in preferred language
+const getTypeLabel = (type: NearbyService['type']): string => {
+  const labels: Record<NearbyService['type'], string> = {
+    hospital: 'Hospital',
+    pharmacy: 'Pharmacy',
+    police: 'Police Station',
+    fire: 'Fire Station',
+  };
+  return labels[type];
+};
+
 // Fetch nearby services from Overpass API
-export const fetchNearbyServices = async (userLocation: UserLocation): Promise<NearbyService[]> => {
+export const fetchNearbyServices = async (
+  userLocation: UserLocation, 
+  preferredLang: string = 'en'
+): Promise<NearbyService[]> => {
   const query = buildOverpassQuery(userLocation.lat, userLocation.lng);
   
   try {
@@ -138,13 +169,24 @@ export const fetchNearbyServices = async (userLocation: UserLocation): Promise<N
           ? `${Math.round(distance * 1000)} m` 
           : `${distance.toFixed(1)} km`;
 
+        // Get localized name, fallback to type label
+        const name = getLocalizedName(element.tags, preferredLang) || getTypeLabel(type);
+        
+        // Build address from available tags
+        const addressParts = [];
+        if (element.tags?.['addr:housenumber']) addressParts.push(element.tags['addr:housenumber']);
+        if (element.tags?.['addr:street']) addressParts.push(element.tags['addr:street']);
+        if (element.tags?.['addr:city']) addressParts.push(element.tags['addr:city']);
+        
+        const address = addressParts.length > 0 
+          ? addressParts.join(', ')
+          : 'Address not available';
+
         return {
           id: `service-${element.id || index}`,
-          name: element.tags?.name || `${type.charAt(0).toUpperCase() + type.slice(1)}`,
+          name,
           type,
-          address: element.tags?.['addr:street'] 
-            ? `${element.tags?.['addr:housenumber'] || ''} ${element.tags?.['addr:street']}, ${element.tags?.['addr:city'] || ''}`
-            : 'Address not available',
+          address,
           distance: distanceStr,
           eta: estimateTravelTime(distance),
           phone: element.tags?.phone || element.tags?.['contact:phone'],
