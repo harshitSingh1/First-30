@@ -21,11 +21,13 @@ export const getUserLocation = (): Promise<UserLocation> => {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        resolve({
+        const location = {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
           accuracy: position.coords.accuracy,
-        });
+        };
+        console.log('[LocationService] Got user location:', location);
+        resolve(location);
       },
       (error) => {
         let message = 'Unknown error occurred';
@@ -40,12 +42,13 @@ export const getUserLocation = (): Promise<UserLocation> => {
             message = 'Location request timed out.';
             break;
         }
+        console.error('[LocationService] Geolocation error:', error.code, message);
         reject({ code: error.code, message });
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000,
+        timeout: 15000,
+        maximumAge: 0, // Don't use cached location - always get fresh
       }
     );
   });
