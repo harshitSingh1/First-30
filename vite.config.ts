@@ -15,9 +15,7 @@ export default defineConfig(({ mode }) => ({
   preview: {
     host: "::",
     port: 4173,
-    allowedHosts: [
-      "first-30-main-9589341.kuberns.cloud"
-    ]
+    allowedHosts: "all"
   },
 
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
