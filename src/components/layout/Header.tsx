@@ -5,13 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 const navItems = [
-  { label: 'Home', path: '/', icon: Home },
   { label: 'Emergency Help', path: '/citizen', icon: AlertCircle },
   { label: 'Intelligence', path: '/intelligence', icon: Brain },
   { label: 'First Aid Kit', path: '/first-aid-kit', icon: Package },
   { label: 'Nearby Help', path: '/map', icon: Map },
   { label: 'Voice Guide', path: '/voice', icon: Mic },
-  { label: 'About', path: '/about', icon: Info },
 ];
 
 const Header = () => {
