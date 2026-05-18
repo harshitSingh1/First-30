@@ -1,4 +1,5 @@
 # 🚨 First30.ai
+https://preview--first-30-aid.lovable.app/
 
 ### *Stay Calm. Act Fast. Voice-guided emergency help for the first 30 minutes.*
 
