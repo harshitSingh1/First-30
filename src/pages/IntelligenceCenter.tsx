@@ -10,6 +10,11 @@ import GraphCanvas, { GraphNode, GraphEdge } from '@/components/intelligence/Gra
 import AgentPanel, { AgentStatus } from '@/components/intelligence/AgentPanel';
 import WalkerStream from '@/components/intelligence/WalkerStream';
 import SimulationMode from '@/components/intelligence/SimulationMode';
+import AgentOrchestrationView from '@/components/intelligence/jac/AgentOrchestrationView';
+import WalkerExecutionPanels from '@/components/intelligence/jac/WalkerExecutionPanels';
+import ReasoningTimeline from '@/components/intelligence/jac/ReasoningTimeline';
+import TechStackSection from '@/components/intelligence/jac/TechStackSection';
+import DemoScenarioMode from '@/components/intelligence/jac/DemoScenarioMode';
 
 type AgentKey = 'intake' | 'triage' | 'risk' | 'action' | 'resource' | 'preparedness';
 
@@ -412,6 +417,39 @@ export default function IntelligenceCenter() {
 
         {/* SIMULATION */}
         <SimulationMode />
+
+        {/* ============= POWERED BY JAC AGENT ARCHITECTURE ============= */}
+        <section className="space-y-4 pt-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 border-t border-border/40 pt-6">
+            <div>
+              <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-primary mb-2">
+                <Cpu className="w-4 h-4" /> Powered by Jac Agent Architecture
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold">
+                Multi-agent orchestration on a live graph.
+              </h2>
+              <p className="text-muted-foreground text-sm max-w-2xl mt-1">
+                Agents, walkers, graph-native memory and persistent preparedness intelligence — modelled
+                directly on Jac/Jaseci concepts. Watch the system reason, not just respond.
+              </p>
+            </div>
+          </div>
+
+          <AgentOrchestrationView />
+
+          <div>
+            <div className="text-sm font-semibold mb-2 flex items-center gap-2">
+              <Workflow className="w-4 h-4 text-primary" /> Walker Execution
+            </div>
+            <WalkerExecutionPanels />
+          </div>
+
+          <ReasoningTimeline />
+
+          <DemoScenarioMode />
+
+          <TechStackSection />
+        </section>
 
         {/* HOW IT WORKS */}
         <div className="glass-card-strong rounded-2xl p-6 border border-border/40">
