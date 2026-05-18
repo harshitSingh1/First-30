@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, Activity, Home, AlertCircle, Map, Mic, Info, Package, Brain } from 'lucide-react';
+import { Menu, Activity, AlertCircle, Map, Mic, Package, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
